@@ -1,0 +1,160 @@
+#include <stdio.h>
+
+// Available books by IDs
+int availableBooks[5] = {331, 332, 333, 334, 335};
+
+// Enhanced checkAvailability
+int checkAvailability(int bookID) {
+    int knownBooks[5] = {331, 332, 333, 334, 335};
+    
+    for (int i = 0; i < 5; i++) {
+        if (availableBooks[i] == bookID) {
+            return 1; // Book Available
+        }
+    }
+
+    for (int i = 0; i < 5; i++) {
+        if (knownBooks[i] == bookID) {
+            return 0; // Book Borrowed
+        }
+    }
+
+    return -1; // Not found in system
+}
+
+// Borrow a book function 
+int borrowBook(int bookID) {
+    for (int i = 0; i < 5; i++) {
+        if (availableBooks[i] == bookID) {
+            availableBooks[i] = -1; // borrowed book is marked
+            printf("Book %d has been borrowed.\n", bookID);
+            return 1;
+        }
+    }
+    printf("Book %d is not available.\n", bookID);
+    return 0;
+}
+
+// Return a book function
+int returnBook(int bookID) {
+    int knownBooks[5] = {331, 332, 333, 334, 335};
+
+    int isKnown = 0;
+    for (int i = 0; i < 5; i++) {
+        if (knownBooks[i] == bookID) {
+            isKnown = 1;
+            break;
+        }
+    }
+
+    if (!isKnown) {
+        printf("Book ID %d does not belong to this library.\n", bookID);
+        return 0;
+    }
+
+    // Check if already available
+    for (int i = 0; i < 5; i++) {
+        if (availableBooks[i] == bookID) {
+            printf("Book %d is already in the library.\n", bookID);
+            return 0;
+        }
+    }
+
+    // Add book back into the availableBooks array in a free (-1) slot
+    for (int i = 0; i < 5; i++) {
+        if (availableBooks[i] == -1) {
+            availableBooks[i] = bookID;
+            printf("Book %d has been returned successfully.\n", bookID);
+            return 1;
+        }
+    }
+
+    printf("Library is full. Cannot return the book.\n");
+    return 0;
+}
+
+// Display current available books
+int displayBooks() {
+    int count = 0; 
+    printf("Available books:\n");
+    for (int i = 0; i < 5; i++) {
+        if (availableBooks[i] != -1) {
+            printf("Book ID: %d\n", availableBooks[i]);
+            count++;
+        }
+    }
+    return count;
+}
+
+int main() 
+{
+    int choice;
+    int bookID;
+    int currentTemp;
+    int desiredTemp;
+
+    while (1) // Keep repeating the menu
+    {
+        printf("\n\nLibrary Inventory Management Menu.\n");
+        printf("1. Check Book Availability\n");
+        printf("2. Borrow a Book\n");
+        printf("3. Display Available Books\n");
+        printf("4. Return a Book\n");
+        printf("5. Exit\n");
+        printf("\nEnter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter Book ID to check: ");
+                scanf("%d", &bookID);
+                {
+                    int status = checkAvailability(bookID);
+                    if (status == 1) {
+                        printf("Book %d is available.\n", bookID);
+                    } else if (status == 0) {
+                        printf("Book %d is currently borrowed.\n", bookID);
+                    } else {
+                        printf("Book ID %d is not found in the system.\n", bookID);
+                    }
+                }
+                break;
+
+            case 2:
+                printf("Enter Book ID to borrow: ");
+                scanf("%d", &bookID);
+                {
+                    int status = checkAvailability(bookID);
+                    if (status == 1) {
+                        borrowBook(bookID);
+                    } else if (status == 0) {
+                        printf("Book %d is already borrowed.\n", bookID);
+                    } else {
+                        printf("Book ID %d does not exist in the system.\n", bookID);
+                    }
+                }
+                break;
+
+            case 3:
+                if (displayBooks() == 0) {
+                    printf("No books available.\n");
+                }
+                break;
+
+            case 4:
+                printf("Enter Book ID to return: ");
+                scanf("%d", &bookID);
+                returnBook(bookID);
+                break;
+
+            case 5:
+                printf("Exiting program. Goodbye!\n");
+                return 0;
+
+            default:
+                printf("Invalid choice! Please enter a valid option.\n");
+        }
+    }
+
+    return 0;
+}
